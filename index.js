@@ -1,12 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 5000;
+var cookieParser = require("cookie-parser");
 
 // middlewares
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4wq6sfj.mongodb.net/?retryWrites=true&w=majority`;
@@ -30,53 +33,81 @@ async function run() {
 
     // get oparations
     app.get("/services", async (req, res) => {
-      const result = await serviceCollection.find().toArray();
-      res.send(result);
+      try {
+        const result = await serviceCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     app.get("/testimonial", async (req, res) => {
-      const result = await testimonialCollection.find().toArray();
-      res.send(result);
+      try {
+        const result = await testimonialCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     app.get("/service/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await serviceCollection.findOne(query);
-      res.send(result);
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await serviceCollection.findOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // post oparations
     app.post("/services", async (req, res) => {
-      const result = await serviceCollection.insertOne(req.body);
-      res.send(result);
+      try {
+        const result = await serviceCollection.insertOne(req.body);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // delete oparations
     app.delete("/service/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await serviceCollection.deleteOne(query);
-      res.send(result);
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await serviceCollection.deleteOne(query);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // put oparations
 
     app.put("/service/:id", async (req, res) => {
-      const id = req.params.id;
-      const body = req.body;
-      const filter = { _id: new ObjectId(id) };
-      const options = { upsert: true };
-      const updated = {
-        $set: {
-          service_name: body.service_name,
-          imageURL: body.imageURL,
-          price : body.price,
-          details: body.details,
-        }
-      };
-      const result = await serviceCollection.updateOne(filter , updated , options)
-      res.send(result)
+      try {
+        const id = req.params.id;
+        const body = req.body;
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updated = {
+          $set: {
+            service_name: body.service_name,
+            imageURL: body.imageURL,
+            price: body.price,
+            details: body.details,
+          },
+        };
+        const result = await serviceCollection.updateOne(
+          filter,
+          updated,
+          options
+        );
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // Send a ping to confirm a successful connection
