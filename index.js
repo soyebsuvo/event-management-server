@@ -26,6 +26,21 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const database = client.db("eventDB");
+    const serviceCollection = database.collection("services");
+    const testimonialCollection = database.collection("testimonial");
+
+    // get oparations 
+    app.get("/services" , async (req , res) => {
+        const result = await serviceCollection.find().toArray();
+        res.send(result)
+    });
+
+    app.get("/testimonial" , async (req , res) => {
+        const result = await testimonialCollection.find().toArray();
+        res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
