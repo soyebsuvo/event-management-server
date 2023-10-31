@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri =
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4wq6sfj.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -30,7 +30,7 @@ async function run() {
     const serviceCollection = database.collection("services");
     const testimonialCollection = database.collection("testimonial");
 
-    // get oparations 
+    // get oparations
     app.get("/services" , async (req , res) => {
         const result = await serviceCollection.find().toArray();
         res.send(result)
@@ -40,6 +40,19 @@ async function run() {
         const result = await testimonialCollection.find().toArray();
         res.send(result);
     });
+
+    app.get("/service/:id" , async (req ,res) => {
+        const id = req.params.id;
+        const query = { _id : new ObjectId(id)};
+        const result = await serviceCollection.findOne(query);
+        res.send(result)
+    })
+
+    // post oparations 
+    app.post("/services" , async (req , res) => {
+        const result = await serviceCollection.insertOne(req.body);
+        res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
